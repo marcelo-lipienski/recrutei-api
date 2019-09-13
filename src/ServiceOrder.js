@@ -7,21 +7,17 @@ const serviceOrder = require('./model/ServiceOrderSchema')
 // GET /service-order/
 // Retrieves service order backlog
 router.get('/', function (req, res) {
-  req.database.once('open', function () {
-    serviceOrder.find({}, function (err, docs) {
-      res.send({ backlog: docs })
-    })
+  serviceOrder.find({}, function (err, docs) {
+    res.send({ backlog: docs })
   })
 })
 
 // GET /service-order/:id
 // Retrieves a service order
 router.get('/:id', function (req, res) {
-  req.database.once('open', function () {
-    serviceOrder.findById(req.params.id, function (err, doc) {
-      if (err) { return res.send({ operation: 'find', success: false })}
-      res.send({ serviceOrder: doc })
-    })
+  serviceOrder.findById(req.params.id, function (err, doc) {
+    if (err) { return res.send({ operation: 'find', success: false })}
+    res.send({ serviceOrder: doc })
   })
 })
 
@@ -33,22 +29,20 @@ router.post('/', function (req, res) {
     description: req.body.description
   })
 
-  req.database.once('open', function () {
-    newServiceOrder.save(function (err) {
-      if (err) { return res.send({ operation: 'create', success: false }) }
-      return res.send({ serviceOrder: newServiceOrder })
-    })
+  newServiceOrder.save(function (err) {
+    if (err) { return res.send({ operation: 'create', success: false }) }
+    return res.send({ serviceOrder: newServiceOrder })
   })
+})
 
-  // PUT /service-order/:id
-  // Updates a service order
-  router.put('/:id', function (req, res) {
-    serviceOrder.findById(req.params.id, function (err, doc) {
-      doc.description = req.body.description
-      doc.save(function (err) {
-        if (err) { return res.send({ operation: 'update', success: false }) }
-        return res.send({ serviceOrder: doc })
-      })
+// PUT /service-order/:id
+// Updates a service order
+router.put('/:id', function (req, res) {
+  serviceOrder.findById(req.params.id, function (err, doc) {
+    doc.description = req.body.description
+    doc.save(function (err) {
+      if (err) { return res.send({ operation: 'update', success: false }) }
+      return res.send({ serviceOrder: doc })
     })
   })
 })
