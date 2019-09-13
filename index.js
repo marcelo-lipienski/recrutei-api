@@ -1,27 +1,25 @@
 const express = require('express')
 const app = express()
-const mongoose = require('mongoose')
 const cors = require('cors')
+const passport = require('passport')
+const bodyParser = require('body-parser')
 
+require('./src/middleware/database')
+require('./src/middleware/auth')
+
+const corsOptions = require('./src/middleware/cors')
+const User = require('./src/User')
 const serviceOrder = require('./src/ServiceOrder')
 
-const corsOptions = {
-  origin: 'http://localhost',
-  optionsSuccessStatus: 200
-}
-
-// Database and CORS middleware
+// CORS middleware
 app.use(cors(corsOptions), function (req, res, next) {
-  mongoose.connect('mongodb://172.18.0.3/recrutei', { useNewUrlParser: true })
-  req.database = mongoose.connection
-  req.database.on('error', function () {
-    res.status(500).send('Something broke!')
-  })
-
   next()
 })
 
 app.use(express.json())
+app.use(passport.initialize())
+
 app.use('/service-order', serviceOrder)
+app.use('/user', User)
 
 app.listen(8000)
