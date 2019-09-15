@@ -5,7 +5,9 @@ const bcrypt = require('bcrypt')
 const userSchema = new Schema({
   _id: Schema.Types.ObjectId,
   username: String,
-  password: String
+  password: String,
+  role: { type: String, enum: [ 'support', 'dev', 'analytics' ] },
+  token: String
 })
 
 userSchema.methods.isValidPassword = function (password) {

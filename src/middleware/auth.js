@@ -17,8 +17,8 @@ passport.use('login', new LocalStrategy({
 }))
 
 passport.use(new JwtStrategy({
-  secretOrKey: 'secret',
-  jwtFromRequest: ExtractJwt.fromUrlQueryParameter('token')
+  secretOrKey: process.env.JWT_SECRET,
+  jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken()
 }, function (token, done) {
   return done(null, token.user)
 }))

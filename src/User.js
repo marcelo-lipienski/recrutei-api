@@ -6,10 +6,24 @@ const jwt = require('jsonwebtoken')
 
 const User = require('./model/UserSchema')
 
+// POST /verify
+// Validates credentials
+router.post('/verify', function (req, res) {
+  let token = req.body.token
+
+  if (!token) { return res.json({ error: 'Invalid token' }) }
+
+  User.findOne({ token }, 'role', function (err, user) {
+    if (err || !user) { return res.json({ error: 'Invalid token' }) }
+    return res.json({ role: user.role })
+  })
+})
+
 // GET /service-order/
 // Retrieves service order backlog
 router.get('/', function (req, res) {
   User.find({}, function (err, users) {
+    if (err) { res.send({ err }) }
     res.send({ users: users })
   })
 })
@@ -30,9 +44,20 @@ router.post('/login', function (req, res, next) {
       if (err) { return next(err) }
 
       const body = { _id: user._id, username: user.username }
-      const token = jwt.sign({ user: body }, 'secret')
+      const token = jwt.sign({ user: body }, process.env.JWT_SECRET)
 
-      return res.json({ token })
+      User.findOne({ username: user.username }, function (err, userUpdate) {
+        if (err) {
+          return res.status(401).send({ error: "Invalid credentials" })
+        }
+
+        userUpdate.token = token
+        userUpdate.save(function(err) {
+          if (err) { return res.status(500).send({ error: "Couldn't set JWT token to user"}) }
+        })
+      })
+
+      return res.json({ token: token, role: user.role })
     })
   })(req, res, next)
 })
