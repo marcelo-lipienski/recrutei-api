@@ -1,16 +1,16 @@
 const express = require('express')
 const router = express.Router()
 const mongoose = require('mongoose')
+const passport = require('passport')
 
 const serviceOrder = require('./model/ServiceOrderSchema')
 
 // GET /service-order/
 // Retrieves service order backlog
-router.get('/', function (req, res) {
-  req.database.once('open', function () {
-    serviceOrder.find({}, function (err, docs) {
-      res.send({ backlog: docs })
-    })
+
+router.get('/', passport.authenticate('jwt', { session: false }), function (req, res) {
+  serviceOrder.find({}, function (err, docs) {
+    res.send({ backlog: docs })
   })
 })
 
