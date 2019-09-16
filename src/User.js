@@ -13,9 +13,9 @@ router.post('/verify', function (req, res) {
 
   if (!token) { return res.json({ error: 'Invalid token' }) }
 
-  User.findOne({ token }, 'role', function (err, user) {
+  User.findOne({ token }, '_id role', function (err, user) {
     if (err || !user) { return res.json({ error: 'Invalid token' }) }
-    return res.json({ role: user.role })
+    return res.json({ _id: user._id, role: user.role })
   })
 })
 
