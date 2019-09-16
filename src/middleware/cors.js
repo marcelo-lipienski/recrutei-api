@@ -1,4 +1,4 @@
 module.exports = {
-  origin: 'http://localhost',
+  origin: process.env.CORS_HOST,
   optionsSuccessStatus: 200
 }
